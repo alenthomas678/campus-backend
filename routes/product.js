@@ -6,6 +6,7 @@ const productRouter = express.Router();
 const auth = require("../middlewares/auth");
 const dateTime = require("node-datetime");
 const Razorpay = require('razorpay');
+require('dotenv').config();
 
 productRouter.get(
   "/products/search/:services/:category",
