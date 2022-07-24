@@ -183,14 +183,7 @@ productRouter.post("/pay-success", async (req, res) => {
       user.cart = [];
       user = await user.save();
       const dt = dateTime.create();
-      let ts = Date.now();
-
-      let date_time = new Date(ts);
-      let date = date_time.getDate();
-      let month = date_time.getMonth() + 1;
-      let year = date_time.getFullYear();
-
-      let datetime = `${date + "/" + month + "/" + year}`;
+      let datetime = dt.format("d-m-Y\nI:M p");
 
       let order = new Order({
         username: user.username,
