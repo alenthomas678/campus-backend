@@ -134,11 +134,11 @@ productRouter.get("/user/myCart", auth, async (req, res) => {
   }
 });
 
-productRouter.get("/get-razorpay-key", auth, (req, res) => {
+productRouter.get("/get-razorpay-key", (req, res) => {
   res.send({ key: process.env.RAZORPAY_KEY_ID });
 });
 
-productRouter.post("/create-order", auth, async (req, res) => {
+productRouter.post("/create-order", async (req, res) => {
   try {
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
