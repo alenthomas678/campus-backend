@@ -5,7 +5,7 @@ const { Product } = require("../models/product");
 const productRouter = express.Router();
 const auth = require("../middlewares/auth");
 const dateTime = require("node-datetime");
-const Razorpay = require('razorpay');
+const Razorpay = require("razorpay");
 require('dotenv').config();
 
 productRouter.get(
@@ -137,20 +137,21 @@ productRouter.get("/user/myCart", auth, async (req, res) => {
 });
 
 productRouter.get("/get-razorpay-key", auth, (req, res) => {
-  res.send({ key: process.env.RAZORPAY_KEY_ID });
+  console.log("key");
+  res.send({ key: 'rzp_test_4iM1GVNeA7ONuV' });
 });
 
-productRouter.post("/create-order", auth, async (req, res) => {
+productRouter.post("/create-order", auth, (req, res) => {
   try {
     const instance = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_SECRET,
+      key_id: 'rzp_test_4iM1GVNeA7ONuV',
+      key_secret: 'KtSFScEadE8gKqtZXgzmlczS',
     });
     const options = {
       amount: req.body.amount,
       currency: "INR",
     };
-    console.log(amount)
+    
     const order = await instance.orders.create(options);
     if (!order) return res.status(500).send("Some error occured");
     res.send(order);
