@@ -5,6 +5,7 @@ const { Product } = require("../models/product");
 const productRouter = express.Router();
 const auth = require("../middlewares/auth");
 const dateTime = require("node-datetime");
+const Razorpay = require('razorpay');
 
 productRouter.get(
   "/products/search/:services/:category",
@@ -134,11 +135,11 @@ productRouter.get("/user/myCart", auth, async (req, res) => {
   }
 });
 
-productRouter.get("/get-razorpay-key", (req, res) => {
+productRouter.get("/get-razorpay-key", auth, (req, res) => {
   res.send({ key: process.env.RAZORPAY_KEY_ID });
 });
 
-productRouter.post("/create-order", async (req, res) => {
+productRouter.post("/create-order", auth, async (req, res) => {
   try {
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
@@ -148,6 +149,7 @@ productRouter.post("/create-order", async (req, res) => {
       amount: req.body.amount,
       currency: "INR",
     };
+    console.log(amount)
     const order = await instance.orders.create(options);
     if (!order) return res.status(500).send("Some error occured");
     res.send(order);
