@@ -154,6 +154,7 @@ productRouter.post("/create-pay-order", auth, async (req, res) => {
       currency: "INR",
       notes: {
         userId: req.user,
+        amount: req.body.amount,
       },
     };
 
@@ -167,7 +168,7 @@ productRouter.post("/create-pay-order", auth, async (req, res) => {
 
 productRouter.post("/pay-success", async (req, res) => {
   try {
-    const shasum = crypto.createHmac("sha256", 'donttrytoseethis');
+    const shasum = crypto.createHmac("sha256", "donttrytoseethis");
     shasum.update(JSON.stringify(req.body));
     const digest = shasum.digest("hex");
 
@@ -177,22 +178,29 @@ productRouter.post("/pay-success", async (req, res) => {
       const response = req.body;
       const resData = response.payload.payment.entity;
 
-      const { amount } = req.body;
       let user = await User.findById(resData.notes.userId);
       let items = user.cart;
       user.cart = [];
       user = await user.save();
-      const dt = dateTime.create();
-      let datetime = dt.format("d-m-Y\nI:M p");
+      // const dt = dateTime.create();
+      // let datetime = dt.format("d-m-Y\nI:M p");
+      let ts = Date.now();
+
+      let date_time = new Date(ts);
+      let date = date_time.getDate();
+      let month = date_time.getMonth() + 1;
+      let year = date_time.getFullYear();
+
+      let datetime = `${day + "/" + month + "/" + year}`;
 
       let order = new Order({
         username: user.username,
         status: "Paid",
         date: datetime,
         products: items,
-        total: amount,
+        total: resData.notes.amount,
       });
-      order = await order.save();
+      await order.save();
     } else {
     }
     res.json({ status: "ok" });
