@@ -6,6 +6,8 @@ const productRouter = express.Router();
 const auth = require("../middlewares/auth");
 const dateTime = require("node-datetime");
 const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
 require("dotenv").config();
 
 productRouter.get(
@@ -141,7 +143,7 @@ productRouter.get("/get-razorpay-key", auth, (req, res) => {
   res.send({ key: "rzp_test_4iM1GVNeA7ONuV" });
 });
 
-productRouter.post("/create-pay-order", async (req, res) => {
+productRouter.post("/create-pay-order", auth, async (req, res) => {
   try {
     const instance = new Razorpay({
       key_id: "rzp_test_4iM1GVNeA7ONuV",
@@ -150,6 +152,9 @@ productRouter.post("/create-pay-order", async (req, res) => {
     const options = {
       amount: req.body.amount,
       currency: "INR",
+      notes: {
+        userId: req.user,
+      },
     };
 
     const order = await instance.orders.create(options);
@@ -160,35 +165,46 @@ productRouter.post("/create-pay-order", async (req, res) => {
   }
 });
 
-productRouter.post("/pay-success", auth, async (req, res) => {
+productRouter.post("/pay-success", async (req, res) => {
   try {
-    const { amount } = req.body;
-    let user = await User.findById(req.user);
-    let items = user.cart;
-    user.cart = [];
-    user = await user.save();
-    const dt = dateTime.create();
-    let ts = Date.now();
+    const shasum = crypto.createHmac("sha256", 'donttrytoseethis');
+    shasum.update(JSON.stringify(req.body));
+    const digest = shasum.digest("hex");
 
-    let date_time = new Date(ts);
-    let date = date_time.getDate();
-    let month = date_time.getMonth() + 1;
-    let year = date_time.getFullYear();
+    console.log(digest, req.headers["x-razorpay-signature"]);
 
-    let datetime = `${date + "/" + month + "/" + year}`;
+    if (digest === req.headers["x-razorpay-signature"]) {
+      const response = req.body;
+      const resData = response.payload.payment.entity;
 
-    let order = new Order({
-      username: user.username,
-      status: "Paid",
-      date: datetime,
-      products: items,
-      total: amount,
-    });
-    order = await order.save();
-    res.status(200).json(order);
+      const { amount } = req.body;
+      let user = await User.findById(resData.notes.userId);
+      let items = user.cart;
+      user.cart = [];
+      user = await user.save();
+      const dt = dateTime.create();
+      let ts = Date.now();
+
+      let date_time = new Date(ts);
+      let date = date_time.getDate();
+      let month = date_time.getMonth() + 1;
+      let year = date_time.getFullYear();
+
+      let datetime = `${date + "/" + month + "/" + year}`;
+
+      let order = new Order({
+        username: user.username,
+        status: "Paid",
+        date: datetime,
+        products: items,
+        total: amount,
+      });
+      order = await order.save();
+    } else {
+    }
+    res.json({ status: "ok" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: e.message });
+    res.status(500).send(error);
   }
 });
 
