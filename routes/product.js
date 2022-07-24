@@ -140,14 +140,14 @@ productRouter.get("/user/myCart", auth, async (req, res) => {
 
 productRouter.get("/get-razorpay-key", auth, (req, res) => {
   console.log("key");
-  res.send({ key: "rzp_test_4iM1GVNeA7ONuV" });
+  res.send({ key: "rzp_test_onN8H72COrh7xM" });
 });
 
 productRouter.post("/create-pay-order", auth, async (req, res) => {
   try {
     const instance = new Razorpay({
-      key_id: "rzp_test_4iM1GVNeA7ONuV",
-      key_secret: "KtSFScEadE8gKqtZXgzmlczS",
+      key_id: "rzp_test_onN8H72COrh7xM",
+      key_secret: "K6iBPA7N5t85xxSR58zO5BBo",
     });
     const options = {
       amount: req.body.amount,
