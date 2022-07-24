@@ -6,7 +6,7 @@ const productRouter = express.Router();
 const auth = require("../middlewares/auth");
 const dateTime = require("node-datetime");
 const Razorpay = require("razorpay");
-require('dotenv').config();
+require("dotenv").config();
 
 productRouter.get(
   "/products/search/:services/:category",
@@ -138,20 +138,20 @@ productRouter.get("/user/myCart", auth, async (req, res) => {
 
 productRouter.get("/get-razorpay-key", auth, (req, res) => {
   console.log("key");
-  res.send({ key: 'rzp_test_4iM1GVNeA7ONuV' });
+  res.send({ key: "rzp_test_4iM1GVNeA7ONuV" });
 });
 
-productRouter.post("/create-pay-order", async(req, res) => {
+productRouter.post("/create-pay-order", async (req, res) => {
   try {
     const instance = new Razorpay({
-      key_id: 'rzp_test_4iM1GVNeA7ONuV',
-      key_secret: 'KtSFScEadE8gKqtZXgzmlczS',
+      key_id: "rzp_test_4iM1GVNeA7ONuV",
+      key_secret: "KtSFScEadE8gKqtZXgzmlczS",
     });
     const options = {
       amount: req.body.amount,
       currency: "INR",
     };
-    
+
     const order = await instance.orders.create(options);
     if (!order) return res.status(500).send("Some error occured");
     res.send(order);
@@ -162,14 +162,20 @@ productRouter.post("/create-pay-order", async(req, res) => {
 
 productRouter.post("/pay-success", auth, async (req, res) => {
   try {
-    const { amount } =
-      req.body;
+    const { amount } = req.body;
     let user = await User.findById(req.user);
     let items = user.cart;
     user.cart = [];
     user = await user.save();
     const dt = dateTime.create();
-    let datetime = dt.format("d-m-Y\nI:M p");
+    let ts = Date.now();
+
+    let date_time = new Date(ts);
+    let date = date_time.getDate();
+    let month = date_time.getMonth() + 1;
+    let year = date_time.getFullYear();
+
+    let datetime = `${date + "/" + month + "/" + year}`;
 
     let order = new Order({
       username: user.username,
