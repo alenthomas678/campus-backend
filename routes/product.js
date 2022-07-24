@@ -141,7 +141,7 @@ productRouter.get("/get-razorpay-key", auth, (req, res) => {
   res.send({ key: 'rzp_test_4iM1GVNeA7ONuV' });
 });
 
-productRouter.post("/create-order", auth, (req, res) => {
+productRouter.post("/create-pay-order", async(req, res) => {
   try {
     const instance = new Razorpay({
       key_id: 'rzp_test_4iM1GVNeA7ONuV',
