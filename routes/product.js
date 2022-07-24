@@ -191,7 +191,7 @@ productRouter.post("/pay-success", async (req, res) => {
       let month = date_time.getMonth() + 1;
       let year = date_time.getFullYear();
 
-      let datetime = `${day + "/" + month + "/" + year}`;
+      let datetime = `${date + "/" + month + "/" + year}`;
 
       let order = new Order({
         username: user.username,
