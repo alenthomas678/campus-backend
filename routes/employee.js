@@ -33,17 +33,18 @@ employeeRouter.post(
   }
 );
 
-employeeRouter.delete("/product/remove/:id", auth, async (req, res) => {
+employeeRouter.delete("/product/remove/:name", auth, async (req, res) => {
   try {
-    const { id } = req.params;
+    const { name } = req.params;
 
-    let product = await Product.findOne({ _id: id });
+    let product = await Product.findOne({ name });
     if (!product) {
       return res.status(400).json({ msg: "Product does not exist!!!" });
     }
     product = await Product.findByIdAndRemove(product._id);
+    const products = await Product.find();
 
-    res.status(200).json({ msg: "Product Removed!!!" });
+    res.status(200).json({ msg: "Product Removed!!!", products: products });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
