@@ -25,8 +25,24 @@ employeeRouter.post(
           services,
         });
         await addProduct.save();
-        res.status(200).json({ msg: "ITEM_ADDED" });
-      } else return res.status(400).json({ msg: "ALREADY_EXISTS" });
+        res.status(200).json({ msg: "Item added Successfully" });
+      }else{
+        if(product.category == category && product.services ==services){
+          return res.status(400).json({ msg: "Product Already Exists!!!" });
+        }
+        else{
+          addProduct = new Product({
+            name,
+            price,
+            category,
+            stock,
+            image: req.file.Location,
+            services,
+          });
+          await addProduct.save();
+          res.status(200).json({ msg: "Item added Successfully" });
+        }
+      }
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
