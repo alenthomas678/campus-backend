@@ -27,6 +27,20 @@ productRouter.get(
   }
 );
 
+productRouter.get(
+  "/products",
+  auth,
+  async (req, res) => {
+    try {
+      const products = await Product.find();
+
+      res.status(200).json(products);
+    } catch (e) {
+      res.status(400).json({ error: e.message });
+    }
+  }
+);
+
 productRouter.post("/user/addToCart/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
@@ -180,6 +194,7 @@ productRouter.post("/pay-success", async (req, res) => {
 
       let user = await User.findById(resData.notes.userId);
       let items = user.cart;
+      quantity = items.quantity;
       user.cart = [];
       user = await user.save();
       // const dt = dateTime.create();
