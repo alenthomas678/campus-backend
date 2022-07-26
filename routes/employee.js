@@ -25,8 +25,8 @@ employeeRouter.post(
           services,
         });
         await addProduct.save();
-        res.status(200).json({ msg: "Item added Successfully" });
-      } else return res.status(400).json({ msg: "Product Already Exists!!!" });
+        res.status(200).json({ msg: "ITEM_ADDED" });
+      } else return res.status(400).json({ msg: "ALREADY_EXISTS" });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

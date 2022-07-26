@@ -12,11 +12,11 @@ authRouter.post("/signin", async (req, res) => {
     if (!user) {
       return res
         .status(400)
-        .json({ msg: "User with this email does not exist!" });
+        .json({ msg: "USER_EXISTS" });
     }
 
     if (user.password != password) {
-      return res.status(400).json({ msg: "Incorrect password." });
+      return res.status(400).json({ msg: "INCORRECT_PASSWORD" });
     }
 
     const token = jwt.sign({ id: user._id }, "passwordKey");
