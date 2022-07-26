@@ -42,7 +42,9 @@ employeeRouter.delete("/product/remove/:id", auth, async (req, res) => {
       return res.status(400).json({ msg: "Product does not exist!!!" });
     }
     product = await Product.findByIdAndRemove(product._id);
-    res.status(200).json({ msg: "Product Removed!!!" });
+    const products = await Product.find();
+
+    res.status(200).json({ msg: "Product Removed!!!", products: products });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
